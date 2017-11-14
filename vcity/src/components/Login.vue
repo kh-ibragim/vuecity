@@ -45,55 +45,52 @@
 </template>
 
 <script>
-  export default {
-    name: 'login'
-  }
 //   import axios from 'axios'
-//   import feathers from 'feathers/client'
-//   import socketio from 'feathers-socketio/client'
-//   import io from 'socket.io-client'
+  import feathers from 'feathers/client'
+  import socketio from 'feathers-socketio/client'
+  import io from 'socket.io-client'
 
-// export default {
-//     middleware: 'index_auth',
-//     data () {
-//       console.log(this.$store.state.token)
-//       if (this.$store.state.token !== null) {
-//         this.$router.push('profile')
-//       }
-//     },
-//     methods: {
-//       login: function (e) {
-//         e.preventDefault()
+  export default {
+    name: 'login',
+    data () {
+      return {
+        email: '',
+        password: ''
+      }
+    },
+    methods: {
+      login: function (e) {
+        e.preventDefault()
 
-//         return axios.post('http://localhost:3030/authentication', {
-//           strategy: 'local',
-//           email: this.email,
-//           password: this.password
-//         }).then((response) => {
-//           this.$store.commit('LOGIN', response.data.accessToken)
-//           console.log(response.data.accessToken)
-//           this.$router.push('profile')
-//         })
-//         .catch((error) => { alert(error) })
-//         // const socket = io('http://localhost:3030')
-//         // socket.emit('authenticate', {
-//         //   strategy: 'local',
-//         //   email: this.email,
-//         //   password: this.password
-//         // }, function (message, data) {
-//         //   console.log(data.accessToken)
-//         //   this.$store.commit('LOGIN', data.accessToken)
-//         //   this.$router.push('profile')
-//         // })
-//       }
-//     },
-//     mounted () {
-//       const app = feathers().configure(socketio(io('http://localhost:3030')))
-//       app.service('authentication').on('created', (message) => {
-//         console.log(message)
-//       })
-//     }
-//   }
+        // return axios.post('http://localhost:3030/authentication', {
+        //   strategy: 'local',
+        //   email: this.email,
+        //   password: this.password
+        // }).then((response) => {
+        //   console.log(response.data.accessToken)
+        //   this.$router.push('profile')
+        //   this.$store.commit('LOGIN', response.data.accessToken)
+        // })
+        // .catch((error) => { alert(error) })
+        const socket = io('http://localhost:3030')
+        socket.emit('authenticate', {
+          strategy: 'local',
+          email: this.email,
+          password: this.password
+        }, function (message, data) {
+          console.log(data.accessToken)
+        //   this.$store.commit('LOGIN', data.accessToken)
+          this.$router.push('profile')
+        })
+      }
+    },
+    mounted () {
+      const app = feathers().configure(socketio(io('http://localhost:3030')))
+      app.service('authentication').on('created', (message) => {
+        console.log(message)
+      })
+    }
+  }
 </script>
 
 <style>
