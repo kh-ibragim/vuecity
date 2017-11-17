@@ -45,7 +45,7 @@
 </template>
 
 <script>
-//   import axios from 'axios'
+  import axios from 'axios'
   import feathers from 'feathers/client'
   import socketio from 'feathers-socketio/client'
   import io from 'socket.io-client'
@@ -58,30 +58,40 @@
         password: ''
       }
     },
+    beforeCreate () {
+      console.log('local store' + localStorage.getItem('token'))
+      console.log('store token' + this.$store.state.token)
+      if (localStorage.getItem('token')) {
+        this.$router.push('/profile')
+      }
+    },
     methods: {
       login: function (e) {
         e.preventDefault()
-
-        // return axios.post('http://localhost:3030/authentication', {
-        //   strategy: 'local',
-        //   email: this.email,
-        //   password: this.password
-        // }).then((response) => {
-        //   console.log(response.data.accessToken)
-        //   this.$router.push('profile')
-        //   this.$store.commit('LOGIN', response.data.accessToken)
-        // })
-        // .catch((error) => { alert(error) })
-        const socket = io('http://localhost:3030')
-        socket.emit('authenticate', {
+        localStorage.setItem('token', null)
+        return axios.post('http://localhost:3030/authentication', {
           strategy: 'local',
           email: this.email,
           password: this.password
-        }, function (message, data) {
-          console.log(data.accessToken)
-        //   this.$store.commit('LOGIN', data.accessToken)
+        }).then((response) => {
+          console.log('after axios request' + response.data.accessToken)
+          localStorage.setItem('token', response.data.accessToken)
+          this.$store.commit('LOGIN', response.data.accessToken)
           this.$router.push('profile')
         })
+        .catch((error) => { alert(error) })
+        // const socket = io('http://localhost:3030')
+        // socket.emit('authenticate', {
+        //   strategy: 'local',
+        //   email: this.email,
+        //   password: this.password
+        // }, function (message, data) {
+        //   console.log(data.accessToken)
+        //   localStorage.setItem('token', data.accessToken)
+        // })
+        // console.log('local ' + localStorage.getItem('token'))
+        // this.$store.commit('LOGIN', localStorage.getItem('token'))
+        // this.$router.push('profile')
       }
     },
     mounted () {
