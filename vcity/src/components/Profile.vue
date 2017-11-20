@@ -1,40 +1,55 @@
 
 <template>
 <div id="profile">
-  <Account /> 
+    <Account />
+        <!--{/*primary info*/}-->
+        <div class="uk-section uk-section-default uk-padding-remove ">       
+            <!--{/*navigation tabs*/}-->
+            <Navigation />
+            <ul class="uk-switcher uk-margin-remove uk-padding-remove">
+                <li class="uk-active">
+                    <!--{/*life*/}-->
+                    <Life />
+                </li>
+                <li>
+                    <!--{/*meetings*/}-->
+                    <Meetings />
+                </li>
+                <li>
+                    <!--{/*my posts*/}  -->
+                    <My />
+                </li>
+                <li>
+                    <!--{/*messages*/}-->
+                    <Messages />
+                </li>
+            </ul>
+        </div>
 </div>
 </template>
 
 <script>
   import Account from './Account'
-  import axios from 'axios'
+  import Navigation from './Navigation.vue'
+  import Life from './Life.vue'
+  import Meetings from './Meetings.vue'
+  import My from './My.vue'
+  import Messages from './Messages.vue'
+
   export default {
     name: 'profile',
-    beforeCreate () {
-      if (localStorage.getItem('token') === null) {
-        this.$router.push('/login')
-      } else {
-        var jwtDecode = require('jwt-decode')
-        var decoded = jwtDecode(localStorage.getItem('token'))
-        console.log(decoded.userId)
-      }
-      var config = {
-        headers: {'Authorization': localStorage.getItem('token')}
-      }
-      return axios.get('http://localhost:3030/users/' + decoded.userId, config).then((response) => {
-        localStorage.setItem('UserName', response.data.name)
-        localStorage.setItem('UserEmail', response.data.email)
-        localStorage.setItem('UserAge', response.data.age)
-      })
-      .catch((error) => { alert(error) })
-    },
     created: function () {
       console.log('local token')
       console.log(localStorage.getItem('token'))
-      // console.log(this.$store.state.token)
+      console.log('store token' + this.$store.state.token)
     },
     components: {
-      Account
+      Account,
+      Navigation,
+      Life,
+      Meetings,
+      My,
+      Messages
     }
   }
 </script>

@@ -3,13 +3,13 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const store = () => new Vuex.Store({
+const store = new Vuex.Store({
   state: {
-    token: null
+    token: ''
   },
   mutations: {
-    LOGIN (state, token) {
-      state.token = token
+    LOGIN (state, acsesstoken) {
+      state.token = acsesstoken
     },
     LOGOUT (state) {
       state.token = null

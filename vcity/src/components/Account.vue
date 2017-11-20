@@ -12,7 +12,7 @@
         <div>
             <div class="uk-margin-remove" uk-grid>
                <div class="uk-width-1-5 uk-padding-remove-left">
-                    <a class="uk-icon-button" uk-icon="icon: file-edit" title="Edit profile" uk-tooltip href="#modal-overflow" uk-toggle></a>
+                    <!-- <a class="uk-icon-button" uk-icon="icon: file-edit" title="Edit profile" uk-tooltip href="#modal-overflow" uk-toggle></a> -->
                </div>
                <div class="uk-width-3-5 uk-padding-remove-left  uk-text-center">
                     <p>{{ userName }}</p>
@@ -27,14 +27,15 @@
 
                     <button class="uk-offcanvas-close" type="button" uk-close></button>
 
-                    <h3><span uk-icon="icon: grid"></span> My profile</h3>
+                    <h3><span class="uk-icon-button" uk-icon="icon: grid"></span> My profile</h3>
 
-                    <p><span uk-icon="icon: user"></span> {{ userName }}</p>
-                    <p><span uk-icon="icon: mail"></span> {{ userEmail }}</p>
-                    <p><span uk-icon="icon: pencil"></span> {{ userAge }}</p>
-                    <p><span uk-icon="icon: users"></span> Sex</p>
-                    <p><span uk-icon="icon: social"></span> Interest</p>
-                    <p><span uk-icon="icon: sign-out"></span> Exit</p>
+                    <p><span class="uk-icon-button" uk-icon="icon: user"></span> Name: {{ userName }}</p>
+                    <p><span class="uk-icon-button" uk-icon="icon: mail"></span> Email: {{ userEmail }}</p>
+                    <p><span class="uk-icon-button" uk-icon="icon: pencil"></span> Age: {{ userAge }}</p>
+                    <p><span class="uk-icon-button" uk-icon="icon: users"></span> Sex: {{ userSex }}</p>
+                    <p><span class="uk-icon-button" uk-icon="icon: social"></span> Interest: {{ userInterests }}</p>
+                    <p><a class="uk-icon-button" uk-icon="icon: file-edit" href="#modal-overflow" uk-toggle></a> Edit profile</p>
+                    <p><button class="uk-icon-button" uk-icon="icon: sign-out" v-on:click="logout"></button> Exit</p>
 
                 </div>
             </div>
@@ -51,7 +52,7 @@
                         <div class="uk-margin">
                         <div class="uk-inline full">
                             <span class="uk-form-icon" uk-icon="icon: user"></span>
-                            <input id="icon_prefix" type="text" class="validate uk-input uk-form-width-large full radius" placeholder="Name" pattern="[a-zA-Z0-9]+" required >
+                            <input id="icon_prefix" type="text" class="validate uk-input uk-form-width-large full radius" v-bind:placeholder="userName" pattern="[a-zA-Z0-9]+" required >
                             <label for="icon_prefix" data-error="Name должно содержать только символы из латинского алфавита и цифры"></label>
                         </div>
                         </div>
@@ -67,7 +68,7 @@
                         <div class="uk-margin">
                         <div class="uk-inline full">
                             <span class="uk-form-icon" uk-icon="icon: mail"></span>
-                            <input id="email" type="email" class="validate uk-input uk-form-width-large full radius" placeholder="Email" required >
+                            <input id="email" type="email" class="validate uk-input uk-form-width-large full radius" v-bind:placeholder="userEmail" required >
                             <label for="email" data-error="Введите корректно свой email"></label>
                         </div>
                         </div>
@@ -75,14 +76,14 @@
                         <div class="uk-margin">
                         <div class="uk-inline full">
                             <span class="uk-form-icon" uk-icon="icon: pencil"></span>
-                        <input id="age" type="number" min="16" max="120" class="validate uk-input uk-form-width-large full radius" placeholder="Age" required>
+                        <input id="age" type="number" min="16" max="120" class="validate uk-input uk-form-width-large full radius" v-bind:placeholder="userAge" required>
                         </div>
                         </div>
   
                         <div class="uk-margin white radius">
                         <div class="uk-form-controls full">
-                            <label><input class="uk-radio" type="radio" name="sex" value="true" checked> Man </label>
-                            <label><input class="uk-radio" type="radio" name="sex" value="false" >  Female</label>
+                            <label><input class="uk-radio" type="radio" name="sex" v-model="editUserSex"> Man </label>
+                            <label><input class="uk-radio" type="radio" name="sex" v-model="editUserSex">  Female</label>
                         </div>
                         </div>
                         </form>
@@ -102,15 +103,65 @@
 </template>
 
 <script>
+import UIkit from 'uikit'
+import axios from 'axios'
+
 export default {
   data () {
     return {
-      userName: localStorage.getItem('UserName'),
-      userEmail: localStorage.getItem('UserEmail'),
-      userAge: localStorage.getItem('UserAge')
+      userName: '',
+      userEmail: '',
+      userAge: '',
+      userSex: '',
+      userInterests: '',
+      editUserSex: ''
     }
   },
-  name: 'Account'
+  mounted: function () {
+    this.userName = localStorage.getItem('UserName')
+    console.log('acccccccc' + this.userName)
+    console.log(localStorage.getItem('UserName'))
+  },
+  beforeCreate () {
+    if (localStorage.getItem('token') === null) {
+      this.$router.push('/login')
+    } else {
+      var jwtDecode = require('jwt-decode')
+      var decoded = jwtDecode(localStorage.getItem('token'))
+      console.log(decoded.userId)
+      var config = {
+        headers: {'Authorization': localStorage.getItem('token')}
+      }
+      return axios.get('http://localhost:3030/users/' + decoded.userId, config).then((response) => {
+        localStorage.setItem('UserName', response.data.name)
+        localStorage.setItem('UserEmail', response.data.email)
+        localStorage.setItem('UserAge', response.data.age)
+        localStorage.setItem('UserInterests', response.data.interests)
+        console.log(response.data.interests)
+        if (response.data.sex === 'true') {
+          localStorage.setItem('UserSex', 'Man')
+        } else {
+          localStorage.setItem('UserSex', 'Female')
+        }
+        this.userName = localStorage.getItem('UserName')
+        this.userEmail = localStorage.getItem('UserEmail')
+        this.userAge = localStorage.getItem('UserAge')
+        this.userSex = localStorage.getItem('UserSex')
+        this.userInterests = localStorage.getItem('UserInterests')
+        this.editUserSex = response.data.sex
+      })
+      .catch((error) => { alert(error) })
+    }
+  },
+  name: 'Account',
+  methods: {
+    logout: function (event) {
+      event.preventDefault()
+      UIkit.offcanvas('#offcanvas-reveal').hide()
+      localStorage.clear()
+      this.$router.push('/login')
+    }
+  }
 }
 </script>
 
