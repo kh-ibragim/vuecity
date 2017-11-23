@@ -6,6 +6,8 @@
             </div> -->
         <div  class="uk-margin-remove" data-uk-grid>
             <div class="uk-width-large@l uk-width-medium@m uk-padding-remove uk-margin-top uk-margin-bottom uk-margin-right selected ss uk-background-muted">
+              
+              
                 <template v-if="!markcl">
                     <div class="uk-container uk-text-center">
                         <a class="uk-icon uk-icon-muted" uk-icon="icon: plus; ratio: 5" title="Create new event" uk-tooltip href="#modal-create-event" uk-toggle style="margin-top: 8em"></a>
@@ -13,18 +15,17 @@
                         <div id="modal-create-event" class="uk-modal-full" uk-modal>
                             <div class="uk-modal-dialog">
                                 <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
-                                    <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
-                                        <div class="uk-background-cover uk-background-muted" uk-height-viewport>
-                                            <div class="uk-text-center">
+                                <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
+                                    <div class="uk-background-cover uk-background-muted" uk-height-viewport>
+                                        <div class="uk-text-center">
                                             <div class="test-upload" style="margin-top: 10%" uk-form-custom>
                                                 <input type="file" multiple>
                                                 <a class="uk-icon" uk-icon="icon: cloud-upload; ratio: 3" uk-tooltip></a>
                                             </div>
-                                            </div>
                                         </div>
-                                            <div class="uk-padding-large">
-
-
+                                    </div>
+                                    
+                                    <div class="uk-padding-large">
                                         <form class="uk-form-horizontal uk-margin-small uk-card  uk-card-default uk-card-body" @submit="createEvent">
 
                                             <div class="uk-margin">
@@ -71,6 +72,7 @@
                                                     <button class="uk-button uk-button-danger uk-button-medium" type="submit">Create event</button>
                                                 </div>
                                             </div>
+                                            
                                         </form>
 
                                       </div>
@@ -85,10 +87,10 @@
                 <template v-else>
                     <div class="uk-container uk-margin-top">
                         <div class="uk-margin uk-card uk-card-default uk-card-body selectedMarker">
-                            <h3 class="uk-margin-remove-bottom">{{ occasionName }}</h3>
-                            <p class="uk-text-meta uk-margin-remove-top"><time datetime="2016-04-01T19:00">April 01, 2016</time></p>
+                          <p class="uk-text-meta uk-margin-remove-top uk-align-right"><time datetime="2016-04-01T19:00"> {{ occasionDate }}</time></p>
+                            <h3 class="uk-margin-remove-bottom uk-margin-medium"><span class="uk-icon-button" uk-icon="icon: bell"></span> {{ occasionName }}</h3>
                             <hr>
-                            {{ occasionDescription }}  <br/>
+                            <span class="uk-icon-button" uk-icon="icon: commenting"></span> {{ occasionDescription }}  <br/>
                             <hr>
                             <button class="uk-button uk-button-danger full">Respond</button> 
                             <button class="uk-button uk-button-text uk-align-right"><span uk-icon="icon: user"><p>12</p></span></button>
@@ -102,12 +104,12 @@
                     <v-tilelayer :url="url" :attribution="attribution"></v-tilelayer>
                     <v-marker :lat-lng="[userPositionLat, userPositionLng]" :icon="icon"></v-marker>
                     <v-circle :lat-lng="[userPositionLat, userPositionLng]" :radius="circle.radius" :color="'#EE82EE'" :fillColor="'#DDA0DD'"></v-circle>
-                    <v-marker :lat-lng="[45, 34.1]" v-on:l-click="clickMarker"></v-marker>
+                    <!-- <v-marker :lat-lng="[45, 34.1]" v-on:l-click="clickMarker"></v-marker> -->
                     <!-- <v-marker v-for="star in stars" :lat-lng="star" :key="star.name">
                         <v-popup :content="star.name +'<br/>'+ star.describe"></v-popup>
                     </v-marker> -->
-                    <v-marker v-for="allEvent in allEventMarker" :lat-lng="allEvent.location" :key="allEvent._id" v-on:l-click="clickMarker(allEvent._id)">
-                        <v-popup :content="allEvent.name +'<br/>'+ allEvent.description"></v-popup>
+                    <v-marker v-for="allEvent in allEventMarker" :lat-lng="allEvent.location" :key="allEvent._id" v-on:l-click="clickMarker(allEvent)">
+                        <!-- <v-popup :content="allEvent.name +'<br/>'+ allEvent.description"></v-popup> -->
                     </v-marker>
                     </v-map>
                 </div>
@@ -193,9 +195,11 @@ export default {
   methods: {
     clickMarker: function (allEvent) {
       this.markcl = true
-      console.log(this.allEvent)
-      // this.occasionName = 'Party for all'
-      // this.occasionDescription = 'Party for all. Meetting in 7 p.m. Near White House. Party for all. Meetting in 7 p.m. Near White House.'
+      this.occasionName = allEvent.name
+      this.occasionDescription = allEvent.description
+      this.occasionDate = Date(allEvent.createdAt)
+      var d = new Date(allEvent.createdAt)
+      this.occasionDate = (d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes())
     },
     createEvent: function (e) {
       return axios.post('http://localhost:3030/events/', {
