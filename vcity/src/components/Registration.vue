@@ -137,6 +137,7 @@
       return axios.get('http://localhost:3030/interests')
       .then((response) => {
         console.log(response.data.data)
+        console.log(Object.keys(response.data.data))
         this.allinterests = response.data.data
       })
     },

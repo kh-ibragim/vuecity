@@ -12,7 +12,7 @@
                                     <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
                                         <div class="uk-background-cover" style="background-color: #f5f5f5;" uk-height-viewport>
                                             <div class="uk-text-center">
-                                                Map
+                                                <GoogleMap />
                                             </div>
                                         </div>
                                             <div class="uk-padding-large">
@@ -52,8 +52,13 @@
 </template>
 
 <script>
+import GoogleMap from './GoogleMap'
+
 export default {
-  name: 'NewGossip'
+  name: 'NewGossip',
+  components: {
+    GoogleMap
+  }
 }
 </script>
 

@@ -1,14 +1,13 @@
 <template>
   <div  class="uk-width-1-1@s uk-margin-remove">
-    <v-map ref="map" style="height: 50em; width: 112.4em;" :zoom="zoom" :min-zoom="minZoom" :max-zoom="maxZoom">
+    <v-map ref="map" style="height: 31.6em;" :zoom="zoom" :min-zoom="minZoom" :max-zoom="maxZoom">
       <v-tilelayer :url="url" :attribution="attribution"></v-tilelayer>
-      <v-marker :lat-lng="[userPositionLat, userPositionLng]" :icon="icon">
-        <v-popup :content="'Your geolocotion'"></v-popup>
-      </v-marker>
+      <v-marker :lat-lng="[userPositionLat, userPositionLng]" :icon="icon"></v-marker>
       <v-circle :lat-lng="[userPositionLat, userPositionLng]" :radius="circle.radius" :color="'#EE82EE'" :fillColor="'#DDA0DD'"></v-circle>
-      <v-marker v-for="star in stars" :lat-lng="star" :key="star.name">
+      <v-marker :lat-lng="[45, 34.1]" v-on:l-click="clickMarker"></v-marker>
+      <!-- <v-marker v-for="star in stars" :lat-lng="star" :key="star.name">
         <v-popup :content="star.name +'<br/>'+ star.describe"></v-popup>
-      </v-marker>
+      </v-marker> -->
     </v-map>
   </div>
 </template>
@@ -38,8 +37,8 @@ export default {
   },
   data () {
     return {
-      zoom: 12,
-      minZoom: 1,
+      zoom: 14,
+      minZoom: 3,
       maxZoom: 20,
       icon: userIcon,
       userPositionLat: '',
@@ -66,6 +65,14 @@ export default {
     })
     this.userPositionLat = localStorage.getItem('userPositionLat')
     this.userPositionLng = localStorage.getItem('userPositionLng')
+    console.log(this.userPositionLat)
+    console.log(this.userPositionLng)
+  },
+  methods: {
+    clickMarker: function (e) {
+      localStorage.setItem('occasionName', 'Party for all')
+      localStorage.setItem('occasionDescription', 'Party for all. Meetting in 7 p.m. Near White House')
+    }
   }
 }
 </script>

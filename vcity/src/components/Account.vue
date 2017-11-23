@@ -128,6 +128,7 @@ export default {
     } else {
       var jwtDecode = require('jwt-decode')
       var decoded = jwtDecode(localStorage.getItem('token'))
+      localStorage.setItem('UserID', decoded.userId)
       console.log(decoded.userId)
       var config = {
         headers: {'Authorization': localStorage.getItem('token')}

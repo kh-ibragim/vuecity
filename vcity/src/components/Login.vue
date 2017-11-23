@@ -60,7 +60,6 @@
     },
     beforeCreate () {
       console.log('local store' + localStorage.getItem('token'))
-      console.log('store token' + this.$store.state.token)
       if (localStorage.getItem('token')) {
         this.$router.push('/profile')
       }
@@ -76,7 +75,6 @@
         }).then((response) => {
           console.log('after axios request' + response.data.accessToken)
           localStorage.setItem('token', response.data.accessToken)
-          this.$store.commit('LOGIN', response.data.accessToken)
           this.$router.push('profile')
         })
         .catch((error) => { alert(error) })
